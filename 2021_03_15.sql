@@ -313,5 +313,3 @@ WHERE job ='SALESMAN'
 OR empno LIKE '78%'; --empno는 타입이 숫자인데 LIKE는 문자열 매칭 
 ==> empno에 담긴 숫자를 문자열로 받았구나를 생각 (묵시적 형변환)
 
-
-
