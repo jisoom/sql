@@ -145,6 +145,7 @@ ORDER BY ename DESC;
  
  SELECT empno, ename
  FROM emp;
+ 
 1-14번의 행번호를 컬럼으로 부여할 수 없을까? --ROWNUM 사용
 SELECT ROWNUM, empno, ename 
 FROM emp
@@ -158,15 +159,23 @@ WHERE ROWNUM <= 15; --가능함(1부터 15까지)
 -------------------------------두개 비교할 줄 알아야함--------------------------------------------
 SELECT ROWNUM, empno, ename 
 FROM emp
-ORDER BY ename;
+ORDER BY ename; --emp 테이블에 ROWNUM 생성 -> ename기준으로 정렬 
 
---1) 인라인 뷰로 만들어 조회하기 ORDER BY를 먼저 하기 위해
-SELECT ROWNUM, empno, ename  --job을 조회하면 오류뜸 (empno, ename만 존재함)
-FROM (SELECT empno, ename 
-      FROM emp
-      ORDER BY ename); 
+--1) 인라인 뷰로 만들어 조회하기 (ORDER BY를 먼저 하기 위해)
+SELECT ROWNUM, empno, ename
+FROM(SELECT empno, ename
+     FROM emp
+     ORDER BY ename); -- emp 테이블을 ename 기준으로 정렬 -> emp 테이블에 ROWNUM 생성
+--job을 조회하면 오류뜸 (empno, ename만 존재함)
 
 --2) 한번 더 인라인 뷰로 만들기 별칭 지정해준 후 WHERE해야 rn 사용 가능
+SELECT *
+FROM(SELECT ROWNUM rn, empno, ename
+     FROM(SELECT empno, ename
+     FROM emp
+     ORDER BY ename))
+WHERE rn BETWEEN :page AND 11; 
+
 ROWNUM으로만 쓰면 첫줄 SELECT절의 ROWNUM이 되기 때문에 6 AND 10 실행안됨
 SELECT *
 FROM (SELECT ROWNUM rn, empno, ename  
@@ -206,17 +215,17 @@ WHERE rn BETWEEN 11 AND 15;
 데이터 정렬(가상 컬럼 ROWNUM 실습 row_1)
 emp 테이블에서 ROWNUM 값이 1~10인 값만 조회하는 쿼리를 작성해보세요 (정렬없이 진행하세요, 결과는 화면과 다를 수 있습니다)
 //정렬이 없어서 결과화면 달라짐
+
 SELECT ROWNUM rn, empno, ename
 FROM emp
-WHERE ROWNUM BETWEEN 1 AND 10;
+WHERE ROWNUM BETWEEN 1 AND 10; --WHERE절의 ROWNUM -> SELECT ROWNUM을 rn으로 해주었기 때문에 WHERE rn은 오류 뜸
 
 row_2
 ROWNUM 값이 11~20(11~14)인 값만 조회하는 쿼리를 작성해보세요
-
 SELECT *
 FROM(SELECT ROWNUM rn, empno, ename
      FROM emp)
-WHERE rn BETWEEN 11 AND 14;
+WHERE rn BETWEEN 11 AND 14; --FROM으로 ROWNUM rn을 먼저 변경 -> WHERE rn 실행  
 
 row_3
 emp 테이블의 사원 정보를 이름 컬럼으로 오름차순 적용했을 때의 11~14번째 행을 다음과 같이 조회하는 쿼리를 작성해보세요
