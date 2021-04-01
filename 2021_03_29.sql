@@ -102,6 +102,9 @@ DDL(Index 주문 / 상담 일자 인덱스 : B트리, 트리가 성장함에 따
 SELECT TO_CHAR(LAST_DAY(TO_DATE(:YYYYMM, 'YYYYMM')),'DD')
 FROM dual;
 
+--SELECT TO_CHAR(LAST_DAY(TO_DATE('202103','YYYYMM')),'DD') dd
+--FROM dual;
+
 주차 : IW
 주간 요일 : D
 
@@ -112,6 +115,14 @@ FROM (SELECT TO_DATE(:YYYYMM, 'YYYYMM') + (LEVEL-1) dt,
     TO_CHAR(TO_DATE(:YYYYMM, 'YYYYMM') + (LEVEL - 1),'IW') iw,*/
 FROM dual
 CONNECT BY LEVEL <=TO_CHAR(LAST_DAY(TO_DATE(:YYYYMM, 'YYYYMM')),'DD'));
+
+--SELECT dt, d
+--FROM(SELECT TO_DATE(:YYYYMM , 'YYYYMM') + (LEVEL - 1) dt,
+--        TO_CHAR(TO_DATE(:YYYYMM, 'YYYYMM') + (LEVEL - 1), 'D') d, --요일(1,2,3,4,5,6,7)
+--        TO_CHAR(TO_DATE(:YYYYMM, 'YYYYMM') + (LEVEL - 1), 'IW') iw
+--FROM dual
+--CONNECT BY LEVEL <= TO_CHAR(LAST_DAY(TO_DATE(:YYYYMM, 'YYYYMM')),'DD'));
+       
 
 SELECT dt, d,
         일요일이면 dt- 아니면 null, 월요일이면 dt-아니면 null,
@@ -134,18 +145,6 @@ FROM (SELECT TO_DATE(:YYYYMM, 'YYYYMM') + (LEVEL-1) dt,
 GROUP BY DECODE(d, 1, iw +1, iw)
 ORDER BY DECODE(d, 1, iw +1, iw);       
 
-SELECT DECODE(d, 1, iw +1, iw) ,        
-        MIN(DECODE(d,1,dt)) sun, MIN(DECODE(d,2,dt)) mon,
-        MIN(DECODE(d,3,dt)) tue, MIN(DECODE(d,4,dt)) wed, 
-        MIN(DECODE(d,5,dt)) thu, MIN(DECODE(d,6,dt))fri, 
-        MIN(DECODE(d,7,dt)) sat
-FROM (SELECT TO_DATE(:YYYYMM, 'YYYYMM') + (LEVEL-1) dt,
-    TO_CHAR(TO_DATE(:YYYYMM, 'YYYYMM') + (LEVEL - 1),'D') d,
-    TO_CHAR(TO_DATE(:YYYYMM, 'YYYYMM') + (LEVEL - 1),'IW') iw
-    FROM dual
-    CONNECT BY LEVEL <=TO_CHAR(LAST_DAY(TO_DATE(:YYYYMM, 'YYYYMM')),'DD'))
-GROUP BY DECODE(d, 1, iw +1, iw)
-ORDER BY DECODE(d, 1, iw +1, iw);
 
 계층 쿼리 --조직도, BOM(Bill of Material), 게시판(답변형 게시판)
         -- 데이터의 상하 관계를 나타내는 쿼리
@@ -231,7 +230,7 @@ h_4
 .ps_id : 부모 노드 아이디
 .value : 노드 값
 
-SELECT LPAD(' ',(LEVEL -1)*4) ||s_id s_id, value
+SELECT LPAD(' ',(LEVEL -1)*4) || s_id s_id, value
 FROM h_sum
 START WITH s_id = '0'
 CONNECT BY PRIOR s_id = ps_id;
