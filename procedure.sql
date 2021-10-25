@@ -76,7 +76,8 @@ BEGIN
          END_DATE   := TO_CHAR(REC.TEST_END_DATE);
          
         IF SYS_DATE BETWEEN START_DATE AND END_DATE THEN 
-            UPDATE TEST SET OPEN_CODE = 'E102' WHERE TEST_ID = REC.TEST_ID; -- 시험시작일자가 현재일자랑 같거나 초과되면서 종료일자가 현재일자랑 같거나 작으면 -> 시험 진행중으로 변경
+             -- 시험시작일자가 현재일자랑 같거나 초과되면서 종료일자가 현재일자랑 같거나 작으면 -> 시험 진행중으로 변경
+            UPDATE TEST SET OPEN_CODE = 'E102' WHERE TEST_ID = REC.TEST_ID; 
             COMMIT;
     
         ELSIF SYS_DATE > END_DATE THEN
